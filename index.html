@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        #quiz-container {
+            background-color: #f0f0f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        button {
+            font-size: 16px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Quiz Game</h1>
+    <div id="quiz-container">
+        <div id="question"></div>
+        <div id="choices"></div>
+        <button id="submit">Submit Answer</button>
+    </div>
+    <div id="result"></div>
+    <button id="next" style="display: none;">Next Question</button>
+
+    <script>
+        const quizData = [
+            {
+                question: "What is the capital of France?",
+                choices: ["London", "Berlin", "Paris", "Madrid"],
+                correct: 2
+            },
+            {
+                question: "Which planet is known as the Red Planet?",
+                choices: ["Mars", "Venus", "Jupiter", "Saturn"],
+                correct: 0
+            },
+            {
+                question: "Who painted the Mona Lisa?",
+                choices: ["Vincent van Gogh", "Leonardo da Vinci", "Pablo Picasso", "Michelangelo"],
+                correct: 1
+            },
+            {
+                question: "What is the largest ocean on Earth?",
+                choices: ["Atlantic Ocean", "Indian Ocean", "Arctic Ocean", "Pacific Ocean"],
+                correct: 3
+            },
+            {
+                question: "Which element has the chemical symbol 'O'?",
+                choices: ["Gold", "Silver", "Oxygen", "Iron"],
+                correct: 2
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+
+        const questionEl = document.getElementById("question");
+        const choicesEl = document.getElementById("choices");
+        const submitBtn = document.getElementById("submit");
+        const nextBtn = document.getElementById("next");
+        const resultEl = document.getElementById("result");
+
+        function loadQuestion() {
+            const question = quizData[currentQuestion];
+            questionEl.textContent = question.question;
+
+            choicesEl.innerHTML = "";
+            question.choices.forEach((choice, index) => {
+                const button = document.createElement("button");
+                button.textContent = choice;
+                button.addEventListener("click", () => selectChoice(index));
+                choicesEl.appendChild(button);
+            });
+
+            submitBtn.style.display = "inline-block";
+            nextBtn.style.display = "none";
+            resultEl.textContent = "";
+        }
+
+        function selectChoice(index) {
+            const buttons = choicesEl.getElementsByTagName("button");
+            for (let i = 0; i < buttons.length; i++) {
+                buttons[i].classList.remove("selected");
+            }
+            buttons[index].classList.add("selected");
+        }
+
+        function submitAnswer() {
+            const selectedButton = choicesEl.querySelector(".selected");
+            if (!selectedButton) {
+                alert("Please select an answer!");
+                return;
+            }
+
+            const selectedAnswer = Array.from(choicesEl.children).indexOf(selectedButton);
+            const question = quizData[currentQuestion];
+
+            if (selectedAnswer === question.correct) {
+                score++;
+                resultEl.textContent = "Correct!";
+                resultEl.style.color = "green";
+            } else {
+                resultEl.textContent = "Incorrect. The correct answer was: " + question.choices[question.correct];
+                resultEl.style.color = "red";
+            }
+
+            submitBtn.style.display = "none";
+            nextBtn.style.display = "inline-block";
+        }
+
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < quizData.length) {
+                loadQuestion();
+            } else {
+                showFinalResult();
+            }
+        }
+
+        function showFinalResult() {
+            questionEl.textContent = "Quiz Completed!";
+            choicesEl.innerHTML = "";
+            submitBtn.style.display = "none";
+            nextBtn.style.display = "none";
+            resultEl.textContent = `Your final score is: ${score} out of ${quizData.length}`;
+            resultEl.style.color = "black";
+        }
+
+        submitBtn.addEventListener("click", submitAnswer);
+        nextBtn.addEventListener("click", nextQuestion);
+
+        loadQuestion();
+    </script>
+</body>
+</html>
